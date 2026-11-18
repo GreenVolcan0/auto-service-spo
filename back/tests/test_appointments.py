@@ -165,3 +165,61 @@ def test_busy_slots(client, employee, client_user, service):
     other_day = (start + timedelta(days=1)).date().isoformat()
     assert client.get(f"/api/employees/{employee['id']}/busy", params={"day": other_day},
                       headers=client_user["headers"]).json() == []
+
+
+def _accepted(client, employee, client_user, service):
+    appt = book(client, client_user["headers"], employee["id"], service["id"], at()).json()
+    client.post(f"/api/appointments/{appt['id']}/accept", headers=employee["headers"])
+    return appt
+
+
+def test_employee_completes_appointment(client, employee, employee2, client_user, service):
+    """TC-31 | Сотрудник отмечает запись выполненной
+    Ожидается: accepted → completed; для непринятой записи 409; чужой сотрудник 403; клиент 403."""
+    appt = book(client, client_user["headers"], employee["id"], service["id"], at()).json()
+    url = f"/api/appointments/{appt['id']}/complete"
+    assert client.post(url, headers=employee["headers"]).status_code == 409  # ещё не принята
+    client.post(f"/api/appointments/{appt['id']}/accept", headers=employee["headers"])
+    assert client.post(url, headers=employee2["headers"]).status_code == 403
+    assert client.post(url, headers=client_user["headers"]).status_code == 403
+    resp = client.post(url, headers=employee["headers"])
+    assert resp.status_code == 200 and resp.json()["status"] == "completed"
+    assert client.post(url, headers=employee["headers"]).status_code == 409  # повторно нельзя
+
+
+def test_employee_marks_appointment_paid(client, employee, client_user, service):
+    """TC-32 | Сотрудник отмечает запись оплаченной
+    Ожидается: до выполнения 409; после выполнения completed → paid; повторная оплата 409."""
+    appt = _accepted(client, employee, client_user, service)
+    pay = f"/api/appointments/{appt['id']}/pay"
+    assert client.post(pay, headers=employee["headers"]).status_code == 409  # ещё не выполнена
+    client.post(f"/api/appointments/{appt['id']}/complete", headers=employee["headers"])
+    assert client.post(pay, headers=client_user["headers"]).status_code == 403
+    resp = client.post(pay, headers=employee["headers"])
+    assert resp.status_code == 200 and resp.json()["status"] == "paid"
+    assert client.post(pay, headers=employee["headers"]).status_code == 409
+
+
+def test_expenses_locked_after_completion(client, employee, client_user, service, price_item):
+    """TC-33 | После выполнения итоговая сумма зафиксирована
+    Ожидается: добавить расход к выполненной записи нельзя (409); total_cost не меняется."""
+    appt = _accepted(client, employee, client_user, service)
+    expense = {"price_item_id": price_item["id"], "quantity": 2}
+    assert client.post(f"/api/appointments/{appt['id']}/expenses", headers=employee["headers"], json=expense).status_code == 201
+    done = client.post(f"/api/appointments/{appt['id']}/complete", headers=employee["headers"]).json()
+    assert done["total_cost"] == 1500 + 1400
+    assert client.post(f"/api/appointments/{appt['id']}/expenses", headers=employee["headers"], json=expense).status_code == 409
+    check = client.get(f"/api/appointments/{appt['id']}", headers=client_user["headers"]).json()
+    assert check["total_cost"] == 1500 + 1400
+
+
+def test_admin_cannot_cancel_completed_or_paid(client, admin, employee, client_user, client_user2, service):
+    """TC-34 | Выполненную и оплаченную запись отменить нельзя
+    Ожидается: админ получает 409 и для completed, и для paid."""
+    first = _accepted(client, employee, client_user, service)
+    client.post(f"/api/appointments/{first['id']}/complete", headers=employee["headers"])
+    assert client.post(f"/api/admin/appointments/{first['id']}/cancel", headers=admin).status_code == 409
+    client.post(f"/api/appointments/{first['id']}/pay", headers=employee["headers"])
+    assert client.post(f"/api/admin/appointments/{first['id']}/cancel", headers=admin).status_code == 409
+    check = client.get(f"/api/appointments/{first['id']}", headers=admin).json()
+    assert check["status"] == "paid"

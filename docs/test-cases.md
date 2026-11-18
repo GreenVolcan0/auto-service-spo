@@ -38,3 +38,7 @@
 | TC-28 | Отменять записи может только администратор | клиент и сотрудник получают 403. | `test_appointments.py::test_only_admin_can_cancel` | |
 | TC-29 | Админ просматривает расписания всех сотрудников и фильтрует по сотруднику | без фильтра 2 записи; с employee_id — одна. | `test_appointments.py::test_admin_views_schedules` | |
 | TC-30 | Занятые интервалы сотрудника на день (для выбора свободного времени) | после записи 10:00–11:00 интервал виден; отменённые не показываются. | `test_appointments.py::test_busy_slots` | |
+| TC-31 | Сотрудник отмечает запись выполненной | accepted → completed; для непринятой записи 409; чужой сотрудник 403; клиент 403. | `test_appointments.py::test_employee_completes_appointment` | |
+| TC-32 | Сотрудник отмечает запись оплаченной | до выполнения 409; после выполнения completed → paid; повторная оплата 409. | `test_appointments.py::test_employee_marks_appointment_paid` | |
+| TC-33 | После выполнения итоговая сумма зафиксирована | добавить расход к выполненной записи нельзя (409); total_cost не меняется. | `test_appointments.py::test_expenses_locked_after_completion` | |
+| TC-34 | Выполненную и оплаченную запись отменить нельзя | админ получает 409 и для completed, и для paid. | `test_appointments.py::test_admin_cannot_cancel_completed_or_paid` | |

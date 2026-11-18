@@ -10,8 +10,8 @@ from app.enums import AppointmentStatus, Role
 from app.models import Appointment, ExtraExpense, User
 from app.schemas import AppointmentOut
 
-# Записи, которые занимают время сотрудника
-BLOCKING_STATUSES = (AppointmentStatus.new, AppointmentStatus.accepted)
+# Записи, которые занимают время сотрудника: все, кроме отменённых
+BLOCKING_STATUSES = tuple(s for s in AppointmentStatus if s != AppointmentStatus.cancelled)
 
 
 def utcnow() -> datetime:

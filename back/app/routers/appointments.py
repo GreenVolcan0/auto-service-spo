@@ -146,6 +146,41 @@ def accept_appointment(
     return appointment_out(load_appointment(db, appointment.id))
 
 
+@router.post("/{appointment_id}/complete", response_model=AppointmentOut)
+def complete_appointment(
+    appointment_id: int,
+    employee: User = Depends(require_roles(Role.employee)),
+    db: Session = Depends(get_db),
+):
+    """accepted → completed: сотрудник отмечает, что работа выполнена. После этого доп. расходы добавлять нельзя —
+    итоговая сумма зафиксирована."""
+    appointment = lock_appointment(db, appointment_id)
+    if appointment.employee_id != employee.id:
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "Это запись другого сотрудника")
+    if appointment.status != AppointmentStatus.accepted:
+        raise HTTPException(status.HTTP_409_CONFLICT, "Выполненной можно отметить только принятую запись")
+    appointment.status = AppointmentStatus.completed
+    db.commit()
+    return appointment_out(load_appointment(db, appointment.id))
+
+
+@router.post("/{appointment_id}/pay", response_model=AppointmentOut)
+def pay_appointment(
+    appointment_id: int,
+    employee: User = Depends(require_roles(Role.employee)),
+    db: Session = Depends(get_db),
+):
+    """completed → paid: сотрудник отмечает, что клиент оплатил итоговую сумму (total_cost)."""
+    appointment = lock_appointment(db, appointment_id)
+    if appointment.employee_id != employee.id:
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "Это запись другого сотрудника")
+    if appointment.status != AppointmentStatus.completed:
+        raise HTTPException(status.HTTP_409_CONFLICT, "Оплатить можно только выполненную запись")
+    appointment.status = AppointmentStatus.paid
+    db.commit()
+    return appointment_out(load_appointment(db, appointment.id))
+
+
 @router.post(
     "/{appointment_id}/expenses", response_model=AppointmentOut, status_code=status.HTTP_201_CREATED
 )

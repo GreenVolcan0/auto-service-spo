@@ -138,10 +138,13 @@ def view_schedules(
 
 @router.post("/appointments/{appointment_id}/cancel", response_model=AppointmentOut)
 def cancel_appointment(appointment_id: int, admin: User = AdminUser, db: Session = Depends(get_db)):
-    """Отмена записи администратором (например, в случае ЧП): new/accepted → cancelled, время освобождается."""
+    """Отмена записи администратором (например, в случае ЧП): new/accepted → cancelled, время освобождается.
+    Выполненную и оплаченную запись отменить нельзя."""
     appointment = lock_appointment(db, appointment_id)
     if appointment.status == AppointmentStatus.cancelled:
         raise HTTPException(status.HTTP_409_CONFLICT, "Запись уже отменена")
+    if appointment.status in (AppointmentStatus.completed, AppointmentStatus.paid):
+        raise HTTPException(status.HTTP_409_CONFLICT, "Выполненную или оплаченную запись отменить нельзя")
     appointment.status = AppointmentStatus.cancelled
     db.commit()
     return appointment_out(load_appointment(db, appointment.id))
