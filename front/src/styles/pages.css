@@ -1,0 +1,360 @@
+/* ============================================================
+   Стили отдельных страниц: витрина, вход/регистрация, мастер
+   записи (визард), профили и админ-разделы.
+   ============================================================ */
+
+/* ---------- Витрина (главная) ---------- */
+
+.hero {
+  padding: 40px 28px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+
+.hero__title {
+  font-size: clamp(26px, 4.6vw, 34px);
+  margin-bottom: 10px;
+}
+
+.hero__text {
+  max-width: 580px;
+  margin-bottom: 20px;
+  font-size: 16px;
+  color: var(--text-muted);
+}
+
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* Блок «Как это работает» */
+.steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.steps__item {
+  display: flex;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.steps__num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.steps__text {
+  font-size: 14px;
+}
+
+.steps__text b {
+  display: block;
+  margin-bottom: 2px;
+}
+
+.steps__text span {
+  color: var(--text-muted);
+}
+
+/* Карточки услуг */
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 14px;
+}
+
+.service-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px 18px;
+}
+
+.service-card__name {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.service-card__desc {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.service-card__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 8px;
+}
+
+.price-tag {
+  font-size: 16px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Вход и регистрация ---------- */
+
+.auth-wrap {
+  max-width: 430px;
+  margin: 36px auto 0;
+  padding: 0 16px;
+}
+
+.auth-card {
+  padding: 24px;
+}
+
+.auth-title {
+  margin-bottom: 4px;
+}
+
+.auth-sub {
+  margin-bottom: 18px;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.auth-foot {
+  margin-top: 16px;
+  font-size: 14px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* Блок демо-доступов на странице входа */
+.demo {
+  margin-top: 16px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.demo summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.demo table {
+  width: 100%;
+  margin-top: 8px;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.demo td {
+  padding: 4px 8px 4px 0;
+  border-bottom: 1px dashed var(--border);
+}
+
+.demo tr:last-child td {
+  border-bottom: none;
+}
+
+/* ---------- Мастер записи (визард) ---------- */
+
+.wizard-section {
+  margin-top: 18px;
+}
+
+.wizard-step-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.wizard-step-head__num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.wizard-step-head__num--off {
+  background: var(--neutral-soft);
+  color: var(--text-muted);
+}
+
+.wizard-step-head h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.option-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px;
+}
+
+.option-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 14px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  background: var(--surface);
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+  transition: border-color 0.12s ease, background 0.12s ease;
+}
+
+.option-card:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+
+.option-card--on {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.option-card:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.option-card__title {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.option-card__meta {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.summary-box {
+  margin-top: 8px;
+  padding: 14px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 14px;
+}
+
+.summary-box dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 16px;
+  margin: 0 0 12px;
+}
+
+.summary-box dt {
+  color: var(--text-muted);
+}
+
+.summary-box dd {
+  margin: 0;
+  font-weight: 600;
+}
+
+/* ---------- Профиль ---------- */
+
+.profile-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+
+/* ---------- Админ-разделы ---------- */
+
+.admin-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.admin-toolbar .input,
+.admin-toolbar .select {
+  width: auto;
+  min-width: 150px;
+}
+
+/* На узких экранах таблица сотрудников и расписаний заменяется карточками */
+.admin-list__cards {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  .admin-list__table {
+    display: none;
+  }
+
+  .admin-list__cards {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .steps {
+    grid-template-columns: 1fr;
+  }
+
+  .hero {
+    padding: 26px 18px;
+  }
+}
+
+/* Компактная карточка сотрудника (мобильная замена таблицы) */
+.person-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 16px;
+}
+
+.person-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.person-card__name {
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.person-card__meta {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.person-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}

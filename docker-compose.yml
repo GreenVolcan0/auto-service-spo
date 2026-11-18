@@ -28,13 +28,13 @@ services:
       db:
         condition: service_healthy
 
-  # Фронтенд (React) добавит фронтенд-разработчик:
-  # front:
-  #   build: ./front
-  #   ports:
-  #     - "3000:3000"
-  #   depends_on:
-  #     - back
+  # Фронтенд: сборка статики и раздача через nginx (SPA-роутинг на :3000)
+  front:
+    build: ./front
+    ports:
+      - "3000:80"
+    depends_on:
+      - back
 
 volumes:
   pgdata:
